@@ -69,9 +69,9 @@
   "homepage": "https://github.com/dannyshmueli/openrouter-model-picker#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dannyshmueli/openrouter-model-picker"
+    "url": "git+https://github.com/dannyshmueli/openrouter-model-picker.git"
   },
   "bugs": {
     "url": "https://github.com/dannyshmueli/openrouter-model-picker/issues"
   }
-} 
+}
