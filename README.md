@@ -2,6 +2,8 @@
 
 A third-party React component for browsing, filtering, and selecting AI models from the [OpenRouter API](https://openrouter.ai/docs/api-reference/list-available-models). This is an unofficial tool created by a user of OpenRouter's service - not affiliated with or endorsed by OpenRouter.
 
+![OpenRouter Model Picker Demo](./assets/demo-screenshot.png)
+
 [![npm version](https://badge.fury.io/js/openrouter-model-picker.svg)](https://badge.fury.io/js/openrouter-model-picker)
 [![npm downloads](https://img.shields.io/npm/dm/openrouter-model-picker.svg)](https://www.npmjs.com/package/openrouter-model-picker)
 
