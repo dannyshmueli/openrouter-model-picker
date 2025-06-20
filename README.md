@@ -5,6 +5,8 @@ A third-party React component for browsing, filtering, and selecting AI models f
 [![npm version](https://badge.fury.io/js/openrouter-model-picker.svg)](https://badge.fury.io/js/openrouter-model-picker)
 [![npm downloads](https://img.shields.io/npm/dm/openrouter-model-picker.svg)](https://www.npmjs.com/package/openrouter-model-picker)
 
+![OpenRouter Model Picker Demo](./assets/demo-screenshot.png)
+
 ## 🎯 Why This Exists
 
 As a developer building LLM-powered applications, I found myself constantly switching between the OpenRouter website and my code to explore available models, compare pricing, and check capabilities. This became especially tedious when:

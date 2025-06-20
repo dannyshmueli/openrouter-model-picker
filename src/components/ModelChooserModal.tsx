@@ -82,7 +82,7 @@ export function ModelChooserModal({
           {/* Header */}
           <div className="modal-header">
             <h2 className="modal-title">
-              Choose AI Model
+              Choose OpenRouter LLM Model
             </h2>
             
             <button
