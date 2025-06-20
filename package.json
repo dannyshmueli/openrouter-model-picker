@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
-  "files": ["dist", "README.md"],
+  "files": ["dist", "src", "README.md", "tsconfig.build.json", "vite.config.ts"],
   "exports": {
     ".": {
       "import": "./dist/index.mjs",
@@ -20,7 +20,8 @@
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "postinstall": "npm run build"
   },
   "peerDependencies": {
     "react": "^18.0.0",

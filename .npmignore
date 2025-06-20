@@ -1,9 +1,6 @@
 # Development files
-src/
 examples/
 *.html
-vite.config.ts
-tsconfig*.json
 
 # Build tools
 node_modules/
