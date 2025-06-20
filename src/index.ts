@@ -1,3 +1,6 @@
+// Import styles so they get bundled by Vite
+import './styles/modal.css'
+
 export { ModelChooserModal } from './components/ModelChooserModal'
 export { FilterBar } from './components/FilterBar'
 export { ModelTable } from './components/ModelTable'
