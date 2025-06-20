@@ -2,7 +2,8 @@
 
 A third-party React component for browsing, filtering, and selecting AI models from the [OpenRouter API](https://openrouter.ai/docs/api-reference/list-available-models). This is an unofficial tool created by a user of OpenRouter's service - not affiliated with or endorsed by OpenRouter.
 
-![OpenRouter Model Picker Demo](https://via.placeholder.com/800x400/3b82f6/ffffff?text=OpenRouter+Model+Picker)
+[![npm version](https://badge.fury.io/js/openrouter-model-picker.svg)](https://badge.fury.io/js/openrouter-model-picker)
+[![npm downloads](https://img.shields.io/npm/dm/openrouter-model-picker.svg)](https://www.npmjs.com/package/openrouter-model-picker)
 
 ## 🎯 Why This Exists
 
@@ -24,11 +25,11 @@ Rather than hardcoding a few model options, this component brings the entire Ope
 
 - 🔍 **Smart Filtering**: Real-time search across model names, providers, descriptions, and features
 - 💰 **Cost Awareness**: Color-coded pricing tiers and detailed cost breakdowns
-- 📊 **Performance Metrics**: Optional analytics tracking for response times and usage patterns
+- 📊 **Performance Metrics**: Context window and capability information
 - ♿ **Accessibility**: Full keyboard navigation, screen reader support, ARIA compliance
 - 📱 **Responsive**: Optimized for desktop, tablet, and mobile devices
-- 🎨 **Customizable**: Light/dark themes, custom API endpoints, fallback data
-- ⚡ **Performance**: Virtual scrolling, debounced search, memoized operations
+- 🎨 **Customizable**: Light/dark themes, custom sizing, and CSS classes
+- ⚡ **Performance**: Debounced search, memoized operations, efficient rendering
 - 🔒 **Type Safe**: Full TypeScript support with comprehensive type definitions
 
 ## 🚀 Installation
@@ -41,23 +42,18 @@ yarn add openrouter-model-picker
 pnpm add openrouter-model-picker
 ```
 
-### Installing from GitHub (Latest)
+### Installing from GitHub (Development)
 
 ```bash
-npm install dannyshmueli/openrouter-model-picker
+npm install github:dannyshmueli/openrouter-model-picker
 ```
-
-**Note**: GitHub installations will automatically build the package via postinstall script.
 
 ## 📦 Basic Usage
 
 ```tsx
 import React, { useState } from 'react'
 import { ModelChooserModal } from 'openrouter-model-picker'
-// Option 1 (recommended):
 import 'openrouter-model-picker/styles'
-// Option 2 (if Option 1 doesn't work):
-// import 'openrouter-model-picker/dist/style.css'
 
 function App() {
   const [selectedModel, setSelectedModel] = useState('openai/gpt-4o-mini')
@@ -87,6 +83,7 @@ function App() {
 ```tsx
 import React, { useState } from 'react'
 import { ModelChooserModal } from 'openrouter-model-picker'
+import 'openrouter-model-picker/styles'
 
 function AdvancedApp() {
   const [selectedModel, setSelectedModel] = useState('openai/gpt-4o-mini')
@@ -137,8 +134,6 @@ function AdvancedApp() {
         onClose={() => setIsModalOpen(false)}
         selectedModel={selectedModel}
         onModelChange={setSelectedModel}
-        apiEndpoint="https://openrouter.ai/api/v1/models"
-        theme="dark"
         maxHeight="90vh"          // Custom height
         maxWidth="1200px"         // Custom width
         className="my-modal"      // Custom CSS class
@@ -152,6 +147,7 @@ function AdvancedApp() {
 
 ```tsx
 import { ModelChooserModal, ModelInfo } from 'openrouter-model-picker'
+import 'openrouter-model-picker/styles'
 
 const fallbackModels: ModelInfo[] = [
   {
@@ -187,9 +183,7 @@ function AppWithFallback() {
 | `onClose` | `() => void` | - | Called when modal is closed |
 | `selectedModel` | `string` | - | Currently selected model ID |
 | `onModelChange` | `(modelId: string) => void` | - | Called when model selection changes |
-| `apiEndpoint` | `string` | OpenRouter API | Custom API endpoint |
 | `fallbackModels` | `ModelInfo[]` | - | Fallback model data |
-| `theme` | `'light' \| 'dark' \| 'auto'` | `'light'` | UI theme |
 | `maxHeight` | `string` | `'80vh'` | Maximum modal height |
 | `maxWidth` | `string` | - | Maximum modal width |
 | `className` | `string` | - | Custom CSS class |
@@ -249,7 +243,7 @@ interface ModelInfo {
 ### useModelData Hook
 
 ```tsx
-import { useModelData } from '@openrouter/model-chooser'
+import { useModelData } from 'openrouter-model-picker'
 
 function CustomComponent() {
   const { models, loading, error, refresh } = useModelData()
@@ -268,7 +262,7 @@ function CustomComponent() {
 ### useFiltering Hook
 
 ```tsx
-import { useFiltering } from '@openrouter/model-chooser'
+import { useFiltering } from 'openrouter-model-picker'
 
 function FilteredList({ models }) {
   const {
@@ -313,8 +307,7 @@ The component is built with accessibility in mind:
 
 - Card-based layout instead of table
 - Touch-friendly filter controls
-- Swipe gestures for navigation
-- Bottom sheet modal presentation
+- Optimized modal sizing
 
 ## 🔒 Error Handling
 
@@ -329,41 +322,18 @@ The component gracefully handles various error scenarios:
 
 ### Optimization Features
 
-- **Virtual Scrolling**: Handles 1000+ models efficiently
 - **Debounced Search**: 300ms delay to reduce excessive filtering
 - **Memoized Operations**: Optimized filtering and sorting
-- **Request Caching**: 5-minute cache for API responses
-- **Lazy Loading**: Components loaded only when needed
-
-### Performance Targets
-
-- Initial load: `< 500ms`
-- Search response: `< 100ms`
-- Modal animation: `< 200ms`
-- Smooth scrolling: `60fps`
-- Memory usage: `< 10MB` for 200+ models
-
-## 🧪 Testing
-
-Run the test suite:
-
-```bash
-npm test
-```
-
-Run tests with coverage:
-
-```bash
-npm run test:coverage
-```
+- **Efficient Rendering**: Optimized React components
+- **Small Bundle Size**: 44.3 kB package size
 
 ## 🛠️ Development
 
 ### Setup
 
 ```bash
-git clone https://github.com/openrouter/model-chooser
-cd model-chooser
+git clone https://github.com/dannyshmueli/openrouter-model-picker
+cd openrouter-model-picker
 npm install
 ```
 
@@ -379,26 +349,30 @@ npm run dev
 npm run build
 ```
 
+### Type Check
+
+```bash
+npm run type-check
+```
+
 ## 📄 License
 
 MIT License - see [LICENSE](LICENSE) file for details.
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📞 Support
 
-- 📖 [Documentation](https://github.com/openrouter/model-chooser/docs)
-- 🐛 [Issue Tracker](https://github.com/openrouter/model-chooser/issues)
-- 💬 [Discord Community](https://discord.gg/openrouter)
-- 📧 [Email Support](mailto:support@openrouter.ai)
+- 📖 [GitHub Repository](https://github.com/dannyshmueli/openrouter-model-picker)
+- 🐛 [Issue Tracker](https://github.com/dannyshmueli/openrouter-model-picker/issues)
+- 📦 [npm Package](https://www.npmjs.com/package/openrouter-model-picker)
 
 ## 🙏 Acknowledgments
 
 - [OpenRouter](https://openrouter.ai) for the AI model API
 - [Lucide React](https://lucide.dev) for the icon set
-- [Tailwind CSS](https://tailwindcss.com) for styling inspiration
 - The React community for best practices and patterns
 
 ---
