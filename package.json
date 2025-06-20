@@ -18,12 +18,16 @@
       "require": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
-    "./styles": "./dist/style.css",
+    "./styles": {
+      "import": "./dist/style.css",
+      "require": "./dist/style.css",
+      "types": "./dist/styles.d.ts"
+    },
     "./dist/style.css": "./dist/style.css"
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build && tsc -p tsconfig.build.json --skipLibCheck",
+    "build": "vite build && tsc -p tsconfig.build.json --skipLibCheck && cp src/styles.d.ts dist/styles.d.ts",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
