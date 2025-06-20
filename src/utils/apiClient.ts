@@ -4,12 +4,14 @@ const DEFAULT_API_ENDPOINT = 'https://openrouter.ai/api/v1/models'
 
 export class ApiClient {
   private endpoint: string
+  private apiKey?: string
   private cache: ModelInfo[] | null = null
   private cacheTimestamp: number = 0
   private readonly CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
 
-  constructor(endpoint?: string) {
+  constructor(endpoint?: string, apiKey?: string) {
     this.endpoint = endpoint || DEFAULT_API_ENDPOINT
+    this.apiKey = apiKey
   }
 
   async fetchModels(forceRefresh = false): Promise<ModelInfo[]> {
@@ -19,7 +21,15 @@ export class ApiClient {
     }
 
     try {
-      const response = await fetch(this.endpoint)
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json'
+      }
+      
+      if (this.apiKey) {
+        headers['Authorization'] = `Bearer ${this.apiKey}`
+      }
+      
+      const response = await fetch(this.endpoint, { headers })
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)

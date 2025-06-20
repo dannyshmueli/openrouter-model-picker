@@ -15,9 +15,12 @@ export function ModelChooserModal({
   apiEndpoint,
   fallbackModels,
   theme = 'light',
-  maxHeight = '80vh'
+  maxHeight = '80vh',
+  maxWidth,
+  className,
+  apiKey
 }: ModelChooserModalProps) {
-  const { models, loading, error, refresh } = useModelData(apiEndpoint, fallbackModels)
+  const { models, loading, error, refresh } = useModelData(apiEndpoint, fallbackModels, apiKey)
   const {
     filteredModels,
     filterState,
@@ -62,7 +65,7 @@ export function ModelChooserModal({
   if (!isOpen) return null
 
   return (
-    <div className={`openrouter-modal ${theme === 'dark' ? 'dark' : ''}`}>
+    <div className={`openrouter-modal ${theme === 'dark' ? 'dark' : ''} ${className || ''}`}>
       {/* Backdrop */}
       <div 
         className="modal-overlay"
@@ -72,7 +75,10 @@ export function ModelChooserModal({
         <div 
           className="modal-content"
           onClick={(e) => e.stopPropagation()}
-          style={{ maxHeight }}
+          style={{ 
+            maxHeight,
+            ...(maxWidth && { maxWidth, width: maxWidth })
+          }}
         >
           {/* Header */}
           <div className="modal-header">

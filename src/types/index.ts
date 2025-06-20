@@ -26,8 +26,11 @@ export interface ModelChooserModalProps {
   // Customization
   apiEndpoint?: string         // Custom API endpoint
   fallbackModels?: ModelInfo[] // Fallback model data
-  theme?: 'light' | 'dark'     // Theme support
+  theme?: 'light' | 'dark' | 'auto' // Theme support with auto detection
   maxHeight?: string           // Custom modal height
+  maxWidth?: string            // Custom modal width
+  className?: string           // Custom CSS class
+  apiKey?: string             // Optional API key override
 }
 
 export interface OpenRouterModel {

@@ -178,9 +178,11 @@ function AppWithFallback() {
 | `onModelChange` | `(modelId: string) => void` | - | Called when model selection changes |
 | `apiEndpoint` | `string` | OpenRouter API | Custom API endpoint |
 | `fallbackModels` | `ModelInfo[]` | - | Fallback model data |
-| `theme` | `'light' \| 'dark'` | `'light'` | UI theme |
+| `theme` | `'light' \| 'dark' \| 'auto'` | `'light'` | UI theme |
 | `maxHeight` | `string` | `'80vh'` | Maximum modal height |
-| `enableVirtualization` | `boolean` | `false` | Enable virtual scrolling |
+| `maxWidth` | `string` | - | Maximum modal width |
+| `className` | `string` | - | Custom CSS class |
+| `apiKey` | `string` | - | Optional API key override |
 
 ### ModelInfo Interface
 
