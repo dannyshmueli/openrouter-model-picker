@@ -46,7 +46,10 @@ pnpm add openrouter-model-picker
 ```tsx
 import React, { useState } from 'react'
 import { ModelChooserModal } from 'openrouter-model-picker'
+// Option 1 (recommended):
 import 'openrouter-model-picker/styles'
+// Option 2 (if Option 1 doesn't work):
+// import 'openrouter-model-picker/dist/style.css'
 
 function App() {
   const [selectedModel, setSelectedModel] = useState('openai/gpt-4o-mini')
