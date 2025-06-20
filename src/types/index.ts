@@ -30,7 +30,6 @@ export interface ModelChooserModalProps {
   maxHeight?: string           // Custom modal height
   maxWidth?: string            // Custom modal width
   className?: string           // Custom CSS class
-  apiKey?: string             // Optional API key override
 }
 
 export interface OpenRouterModel {

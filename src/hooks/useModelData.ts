@@ -11,13 +11,12 @@ interface UseModelDataReturn {
 
 export function useModelData(
   apiEndpoint?: string,
-  fallbackModels?: ModelInfo[],
-  apiKey?: string
+  fallbackModels?: ModelInfo[]
 ): UseModelDataReturn {
   const [models, setModels] = useState<ModelInfo[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [apiClient] = useState(() => new ApiClient(apiEndpoint, apiKey))
+  const [apiClient] = useState(() => new ApiClient(apiEndpoint))
 
   const fetchModels = useCallback(async (forceRefresh = false) => {
     try {

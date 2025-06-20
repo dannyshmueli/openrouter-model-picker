@@ -17,10 +17,9 @@ export function ModelChooserModal({
   theme = 'light',
   maxHeight = '80vh',
   maxWidth,
-  className,
-  apiKey
+  className
 }: ModelChooserModalProps) {
-  const { models, loading, error, refresh } = useModelData(apiEndpoint, fallbackModels, apiKey)
+  const { models, loading, error, refresh } = useModelData(apiEndpoint, fallbackModels)
   const {
     filteredModels,
     filterState,

@@ -41,6 +41,14 @@ yarn add openrouter-model-picker
 pnpm add openrouter-model-picker
 ```
 
+### Installing from GitHub (Latest)
+
+```bash
+npm install dannyshmueli/openrouter-model-picker
+```
+
+**Note**: GitHub installations will automatically build the package via postinstall script.
+
 ## 📦 Basic Usage
 
 ```tsx
@@ -131,6 +139,9 @@ function AdvancedApp() {
         onModelChange={setSelectedModel}
         apiEndpoint="https://openrouter.ai/api/v1/models"
         theme="dark"
+        maxHeight="90vh"          // Custom height
+        maxWidth="1200px"         // Custom width
+        className="my-modal"      // Custom CSS class
       />
     </div>
   )
@@ -182,7 +193,6 @@ function AppWithFallback() {
 | `maxHeight` | `string` | `'80vh'` | Maximum modal height |
 | `maxWidth` | `string` | - | Maximum modal width |
 | `className` | `string` | - | Custom CSS class |
-| `apiKey` | `string` | - | Optional API key override |
 
 ### ModelInfo Interface
 
