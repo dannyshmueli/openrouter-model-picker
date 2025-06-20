@@ -1,0 +1,406 @@
+/* Modal Component Styles */
+.openrouter-modal {
+  /* CSS Custom Properties for theming */
+  --or-primary-color: #3b82f6;
+  --or-primary-hover: #2563eb;
+  --or-background: #ffffff;
+  --or-text: #111827;
+  --or-text-secondary: #6b7280;
+  --or-border: #e5e7eb;
+  --or-shadow: rgba(0, 0, 0, 0.1);
+}
+
+/* Modal overlay - covers entire screen */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 1rem;
+}
+
+/* Modal content container */
+.modal-content {
+  background-color: var(--or-background);
+  border-radius: 0.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  width: 100%;
+  max-width: 64rem;
+  max-height: calc(100vh - 2rem);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Modal header */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--or-border);
+}
+
+.modal-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--or-text);
+  margin: 0;
+}
+
+.modal-close-button {
+  background: none;
+  border: none;
+  color: var(--or-text-secondary);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  transition: background-color 0.2s;
+}
+
+.modal-close-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Modal body */
+.modal-body {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Filter bar styles */
+.filter-bar {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--or-border);
+  background-color: var(--or-background);
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--or-border);
+  border-radius: 0.375rem;
+  background-color: var(--or-background);
+  color: var(--or-text);
+  font-size: 0.875rem;
+}
+
+.filter-select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--or-border);
+  border-radius: 0.375rem;
+  background-color: var(--or-background);
+  color: var(--or-text);
+  font-size: 0.875rem;
+  min-width: 120px;
+}
+
+.filter-button {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--or-border);
+  border-radius: 0.375rem;
+  background-color: var(--or-background);
+  color: var(--or-text);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filter-button:hover {
+  background-color: rgba(59, 130, 246, 0.05);
+}
+
+.filter-button.active {
+  background-color: var(--or-primary-color);
+  color: white;
+  border-color: var(--or-primary-color);
+}
+
+.clear-filters-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.375rem;
+  background-color: transparent;
+  color: var(--or-text-secondary);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.clear-filters-button:hover {
+  color: var(--or-text);
+}
+
+.results-count {
+  color: var(--or-text-secondary);
+  font-size: 0.875rem;
+  margin-left: auto;
+}
+
+/* Table container */
+.table-container {
+  flex: 1;
+  overflow: auto;
+  background-color: var(--or-background);
+}
+
+.model-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.model-table th,
+.model-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--or-border);
+}
+
+.model-table th {
+  background-color: var(--or-background);
+  font-weight: 600;
+  color: var(--or-text);
+  cursor: pointer;
+  user-select: none;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.model-table th:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.model-table td {
+  color: var(--or-text);
+  font-size: 0.875rem;
+}
+
+.model-table tbody tr {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.model-table tbody tr:hover {
+  background-color: rgba(59, 130, 246, 0.05);
+}
+
+.model-table tbody tr.selected {
+  background-color: rgba(59, 130, 246, 0.1);
+  border-color: var(--or-primary-color);
+}
+
+/* Loading and error states */
+.loading-container,
+.error-container,
+.empty-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  text-align: center;
+  color: var(--or-text-secondary);
+}
+
+.loading-spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid var(--or-border);
+  border-top: 2px solid var(--or-primary-color);
+  border-radius: 50%;
+  margin-bottom: 1rem;
+}
+
+.error-message {
+  color: #ef4444;
+  margin-bottom: 1rem;
+}
+
+.retry-button {
+  padding: 0.5rem 1rem;
+  background-color: var(--or-primary-color);
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.retry-button:hover {
+  background-color: var(--or-primary-hover);
+}
+
+.openrouter-modal.dark {
+  --or-background: #1f2937;
+  --or-text: #f9fafb;
+  --or-text-secondary: #9ca3af;
+  --or-border: #374151;
+  --or-shadow: rgba(0, 0, 0, 0.3);
+}
+
+/* Cost tier colors */
+.cost-tier-free {
+  background-color: #10b981;
+}
+
+.cost-tier-low {
+  background-color: #3b82f6;
+}
+
+.cost-tier-medium {
+  background-color: #f59e0b;
+}
+
+.cost-tier-high {
+  background-color: #ef4444;
+}
+
+/* Feature tags */
+.feature-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  background-color: #f3f4f6;
+  color: #374151;
+  border-radius: 0.375rem;
+}
+
+/* Table styles */
+.model-table {
+  font-variant-numeric: tabular-nums;
+}
+
+.model-table thead th {
+  position: sticky;
+  top: 0;
+  background-color: var(--or-background);
+  z-index: 10;
+}
+
+.model-table tbody tr:hover {
+  background-color: rgba(59, 130, 246, 0.05);
+}
+
+.model-table tbody tr.selected {
+  background-color: rgba(59, 130, 246, 0.1);
+  border-color: var(--or-primary-color);
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .openrouter-modal {
+    margin: 1rem;
+    max-height: calc(100vh - 2rem);
+  }
+  
+  .model-table {
+    font-size: 0.875rem;
+  }
+  
+  .filter-bar {
+    padding: 1rem;
+  }
+  
+  .filter-bar .flex-wrap {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+}
+
+/* Animation styles */
+.modal-overlay {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal-content {
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Loading spinner */
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Focus styles for accessibility */
+.openrouter-modal button:focus,
+.openrouter-modal input:focus,
+.openrouter-modal select:focus {
+  outline: 2px solid var(--or-primary-color);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .openrouter-modal {
+    --or-border: #000000;
+    --or-text-secondary: #000000;
+  }
+  
+  .openrouter-modal.dark {
+    --or-border: #ffffff;
+    --or-text-secondary: #ffffff;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .modal-overlay,
+  .modal-content,
+  .spinner {
+    animation: none;
+  }
+  
+  .openrouter-modal * {
+    transition: none !important;
+  }
+} 

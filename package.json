@@ -1,0 +1,65 @@
+{
+  "name": "openrouter-model-picker",
+  "version": "1.0.0",
+  "description": "Third-party React component for OpenRouter model selection",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": ["dist", "README.md"],
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./styles": "./dist/style.css"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && tsc -p tsconfig.build.json && cp src/styles/modal.css dist/style.css",
+    "preview": "vite preview",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.66",
+    "@types/react-dom": "^18.2.22",
+    "@typescript-eslint/eslint-plugin": "^7.2.0",
+    "@typescript-eslint/parser": "^7.2.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.6",
+    "typescript": "^5.2.2",
+    "vite": "^5.2.0"
+  },
+  "dependencies": {
+    "lucide-react": "^0.263.1"
+  },
+  "keywords": [
+    "react",
+    "openrouter",
+    "llm",
+    "llm-model-picker",
+    "ai",
+    "model-selection",
+    "modal",
+    "component",
+    "typescript"
+  ],
+  "author": "Danny Shmueli",
+  "license": "MIT",
+  "homepage": "https://github.com/dannyshmueli/openrouter-model-picker#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dannyshmueli/openrouter-model-picker"
+  },
+  "bugs": {
+    "url": "https://github.com/dannyshmueli/openrouter-model-picker/issues"
+  }
+} 
