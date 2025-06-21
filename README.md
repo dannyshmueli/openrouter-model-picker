@@ -1,6 +1,8 @@
 # OpenRouter Model Picker
 
-A third-party React component for browsing, filtering, and selecting AI models from the [OpenRouter API](https://openrouter.ai/docs/api-reference/list-available-models). This is an unofficial tool created by a user of OpenRouter's service - not affiliated with or endorsed by OpenRouter.
+A React component that gives you an **in-app model selector** for the [OpenRouter API](https://openrouter.ai/docs/api-reference/list-available-models). Browse, filter, and select from 325+ AI models with real-time cost comparison and spec viewing - no more alt-tabbing during development.
+
+*This is an unofficial tool created by a user of OpenRouter's service - not affiliated with or endorsed by OpenRouter.*
 
 
 [![npm version](https://badge.fury.io/js/openrouter-model-picker.svg)](https://badge.fury.io/js/openrouter-model-picker)
@@ -10,15 +12,21 @@ A third-party React component for browsing, filtering, and selecting AI models f
 
 ## 🎯 Why This Exists
 
-As a developer building LLM-powered applications, I found myself constantly switching between the OpenRouter website and my code to explore available models, compare pricing, and check capabilities. This became especially tedious when:
+**LLM model selection is a moving target.** When building AI-powered applications, choosing the right model involves constant trade-offs between cost, quality, speed, and capabilities. This is what I call finding **Product-Model Fit** - the model that best serves your product at each stage of development.
+
+> 📖 **Read more:** [Product Model Fit with OpenRouter Model Picker](https://dannyshmueli.com/2025/06/21/Product-Model-Fit-with-OpenRouter-Model-Picker/) - A deeper dive into the concept and development story behind this component.
+
+As a developer, I found myself constantly alt-tabbing between the OpenRouter website and my code to explore available models, compare pricing, and check capabilities. This became especially tedious when:
 
 - **Building prototypes** where I needed to quickly test different models
 - **Optimizing costs** by comparing pricing across providers and model tiers  
 - **Matching capabilities** to specific use cases (vision, context length, etc.)
+- **Avoiding analysis paralysis** with 325+ model options
 
-Rather than hardcoding a few model options, this component brings the entire OpenRouter model catalog directly into your application. So you can make informed decisions about model selection based on real-time pricing, capabilities, and performance characteristics - all within your app's interface.
+Rather than hardcoding a few model options or losing momentum switching between tabs, this component brings the entire OpenRouter model catalog directly into your application. Make informed decisions about model selection based on real-time pricing, capabilities, and performance characteristics - all within your app's interface.
 
 **Perfect for:**
+- Finding **Product-Model Fit** during development and iteration
 - Developer tools and AI playgrounds  
 - Cost optimization dashboards
 - Multi-model AI applications
@@ -380,4 +388,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ---
 
-Built with ❤️ for the AI developer community 
+Built with ❤️ for the AI and Vibe coding community 
