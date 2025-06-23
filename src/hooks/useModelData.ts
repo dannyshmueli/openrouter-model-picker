@@ -4,9 +4,21 @@ import { ApiClient } from '../utils/apiClient'
 
 interface UseModelDataReturn {
   models: ModelInfo[]
+  freeModels: ModelInfo[]
+  paidModels: ModelInfo[]
   loading: boolean
   error: string | null
   refresh: () => Promise<void>
+  testModel: (modelId: string, apiKey: string, testMessage?: string) => Promise<{
+    success: boolean
+    response?: string
+    error?: string
+    usage?: {
+      prompt_tokens: number
+      completion_tokens: number
+      total_tokens: number
+    }
+  }>
 }
 
 export function useModelData(
@@ -14,6 +26,8 @@ export function useModelData(
   fallbackModels?: ModelInfo[]
 ): UseModelDataReturn {
   const [models, setModels] = useState<ModelInfo[]>([])
+  const [freeModels, setFreeModels] = useState<ModelInfo[]>([])
+  const [paidModels, setPaidModels] = useState<ModelInfo[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [apiClient] = useState(() => new ApiClient(apiEndpoint))
@@ -37,6 +51,12 @@ export function useModelData(
       }
       
       setModels(fetchedModels)
+      
+      // Categorize models by cost tier
+      const { freeModels: free, paidModels: paid } = apiClient.categorizeModels(fetchedModels)
+      setFreeModels(free)
+      setPaidModels(paid)
+      
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch models'
       setError(errorMessage)
@@ -44,6 +64,9 @@ export function useModelData(
       // Set fallback models if available
       if (fallbackModels && fallbackModels.length > 0) {
         setModels(fallbackModels)
+        const { freeModels: free, paidModels: paid } = apiClient.categorizeModels(fallbackModels)
+        setFreeModels(free)
+        setPaidModels(paid)
       }
     } finally {
       setLoading(false)
@@ -54,14 +77,21 @@ export function useModelData(
     await fetchModels(true)
   }, [fetchModels])
 
+  const testModel = useCallback(async (modelId: string, apiKey: string, testMessage?: string) => {
+    return await apiClient.testModel(modelId, apiKey, testMessage)
+  }, [apiClient])
+
   useEffect(() => {
     fetchModels()
   }, [fetchModels])
 
   return {
     models,
+    freeModels,
+    paidModels,
     loading,
     error,
-    refresh
+    refresh,
+    testModel
   }
 } 

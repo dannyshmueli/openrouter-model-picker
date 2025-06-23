@@ -43,7 +43,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem;
+  padding: 1rem 1.5rem;
   border-bottom: 1px solid var(--or-border);
 }
 
@@ -78,7 +78,7 @@
 
 /* Filter bar styles */
 .filter-bar {
-  padding: 1rem 1.5rem;
+  padding: 0.75rem 1.5rem;
   border-bottom: 1px solid var(--or-border);
   background-color: var(--or-background);
 }
@@ -153,11 +153,19 @@
   margin-left: auto;
 }
 
+/* Categorized models container */
+.categorized-models {
+  flex: 1;
+  overflow: auto;
+  min-height: 0; /* Critical: allows flex child to shrink and enable scrolling */
+}
+
 /* Table container */
 .table-container {
   flex: 1;
   overflow: auto;
   background-color: var(--or-background);
+  min-height: 0; /* Critical: allows flex child to shrink and enable scrolling */
 }
 
 .model-table {
@@ -168,7 +176,7 @@
 
 .model-table th,
 .model-table td {
-  padding: 0.75rem;
+  padding: 0.5rem;
   text-align: left;
   border-bottom: 1px solid var(--or-border);
 }

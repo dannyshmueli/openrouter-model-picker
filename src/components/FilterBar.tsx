@@ -53,12 +53,13 @@ export function FilterBar({
   const hasActiveFilters = filterState.searchTerm || 
     filterState.selectedProviders.length > 0 || 
     filterState.selectedCostTiers.length > 0 || 
-    filterState.showMultimodal
+    filterState.showMultimodal ||
+    filterState.hideExperimental
 
   return (
     <div className="filter-bar">
       {/* Search Bar */}
-      <div style={{ position: 'relative', marginBottom: '1rem' }}>
+      <div style={{ position: 'relative', marginBottom: '0.75rem' }}>
         <Search style={{ 
           position: 'absolute', 
           left: '0.75rem', 
@@ -79,69 +80,94 @@ export function FilterBar({
       </div>
 
       {/* Filter Controls */}
-      <div className="filter-row">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <Filter style={{ width: '1rem', height: '1rem', color: 'var(--or-text-secondary)' }} />
-          <span style={{ fontSize: '0.875rem', fontWeight: '500', color: 'var(--or-text)' }}>Filters:</span>
-        </div>
-
-        {/* Provider Filter */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', alignItems: 'center' }}>
-          <span style={{ fontSize: '0.75rem', color: 'var(--or-text-secondary)', textTransform: 'uppercase', fontWeight: '500' }}>Provider:</span>
-          {availableProviders.slice(0, 6).map(provider => (
+      <div className="filter-row" style={{ flexDirection: 'column', gap: '0.5rem', alignItems: 'flex-start' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'space-between', width: '100%' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Filter style={{ width: '1rem', height: '1rem', color: 'var(--or-text-secondary)' }} />
+            <span style={{ fontSize: '0.875rem', fontWeight: '500', color: 'var(--or-text)' }}>Filters:</span>
+          </div>
+          
+          {/* Clear Filters */}
+          {hasActiveFilters && (
             <button
-              key={provider}
-              onClick={() => handleProviderToggle(provider)}
-              className={`filter-button ${filterState.selectedProviders.includes(provider) ? 'active' : ''}`}
-              style={{ fontSize: '0.75rem' }}
+              onClick={onClearFilters}
+              className="clear-filters-button"
+              style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}
             >
-              {provider}
+              <RotateCcw style={{ width: '0.75rem', height: '0.75rem' }} />
+              Clear all
             </button>
-          ))}
-          {availableProviders.length > 6 && (
-            <span style={{ fontSize: '0.75rem', color: 'var(--or-text-secondary)' }}>
-              +{availableProviders.length - 6} more
-            </span>
           )}
         </div>
 
+        {/* Provider Filter */}
+        <div style={{ width: '100%' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', alignItems: 'center', marginBottom: '0.25rem' }}>
+            <span style={{ fontSize: '0.75rem', color: 'var(--or-text-secondary)', textTransform: 'uppercase', fontWeight: '500', minWidth: 'fit-content' }}>Provider:</span>
+          </div>
+          <div style={{ 
+            display: 'flex', 
+            flexWrap: 'wrap', 
+            gap: '0.375rem',
+            maxHeight: '50px',
+            overflowY: 'auto',
+            padding: '0.375rem',
+            border: '1px solid var(--or-border)',
+            borderRadius: '0.25rem',
+            backgroundColor: 'rgba(0, 0, 0, 0.01)'
+          }}>
+            {availableProviders.map(provider => (
+              <button
+                key={provider}
+                onClick={() => handleProviderToggle(provider)}
+                className={`filter-button ${filterState.selectedProviders.includes(provider) ? 'active' : ''}`}
+                style={{ fontSize: '0.7rem', padding: '0.25rem 0.5rem' }}
+              >
+                {provider}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Cost Tier Filter */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', alignItems: 'center' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem', alignItems: 'center' }}>
           <span style={{ fontSize: '0.75rem', color: 'var(--or-text-secondary)', textTransform: 'uppercase', fontWeight: '500' }}>Cost:</span>
           {COST_TIERS.map(tier => (
             <button
               key={tier}
               onClick={() => handleCostTierToggle(tier)}
               className={`filter-button ${filterState.selectedCostTiers.includes(tier) ? 'active' : ''}`}
-              style={{ fontSize: '0.75rem' }}
+              style={{ fontSize: '0.7rem', padding: '0.25rem 0.5rem' }}
             >
               {getCostTierLabel(tier)}
             </button>
           ))}
         </div>
 
-        {/* Multimodal Filter */}
-        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-          <input
-            type="checkbox"
-            checked={filterState.showMultimodal}
-            onChange={(e) => onFilterChange('showMultimodal', e.target.checked)}
-            style={{ width: '1rem', height: '1rem' }}
-          />
-          <span style={{ fontSize: '0.875rem', color: 'var(--or-text)' }}>Multimodal only</span>
-        </label>
+        {/* Model Type Filters */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', alignItems: 'center' }}>
+          {/* Multimodal Filter */}
+          <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', cursor: 'pointer' }}>
+            <input
+              type="checkbox"
+              checked={filterState.showMultimodal}
+              onChange={(e) => onFilterChange('showMultimodal', e.target.checked)}
+              style={{ width: '0.875rem', height: '0.875rem' }}
+            />
+            <span style={{ fontSize: '0.8rem', color: 'var(--or-text)' }}>Multimodal only</span>
+          </label>
 
-        {/* Clear Filters */}
-        {hasActiveFilters && (
-          <button
-            onClick={onClearFilters}
-            className="clear-filters-button"
-            style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}
-          >
-            <RotateCcw style={{ width: '0.75rem', height: '0.75rem' }} />
-            Clear all
-          </button>
-        )}
+          {/* Hide Experimental Filter */}
+          <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', cursor: 'pointer' }}>
+            <input
+              type="checkbox"
+              checked={filterState.hideExperimental}
+              onChange={(e) => onFilterChange('hideExperimental', e.target.checked)}
+              style={{ width: '0.875rem', height: '0.875rem' }}
+            />
+            <span style={{ fontSize: '0.8rem', color: 'var(--or-text)' }}>Hide experimental</span>
+          </label>
+        </div>
       </div>
 
       {/* Results Counter */}
@@ -149,16 +175,18 @@ export function FilterBar({
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center', 
-        fontSize: '0.875rem', 
+        fontSize: '0.8rem', 
         color: 'var(--or-text-secondary)',
-        marginTop: '1rem'
+        marginTop: '0.5rem',
+        paddingTop: '0.5rem',
+        borderTop: '1px solid var(--or-border)'
       }}>
         <span className="results-count">
           Showing {filterStats.filtered} of {filterStats.total} models
         </span>
-        {hasActiveFilters && (
-          <span style={{ color: 'var(--or-primary-color)' }}>
-            {filterStats.total - filterStats.filtered} models filtered out
+        {filterStats.filtered < filterStats.total && (
+          <span style={{ color: 'var(--or-primary-color)', marginLeft: '1rem' }}>
+            {filterStats.total - filterStats.filtered} hidden by filters
           </span>
         )}
       </div>

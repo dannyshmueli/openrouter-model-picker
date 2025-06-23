@@ -1,6 +1,7 @@
 import { OpenRouterResponse, ModelInfo, OpenRouterModel } from '../types'
 
 const DEFAULT_API_ENDPOINT = 'https://openrouter.ai/api/v1/models'
+const CHAT_COMPLETION_ENDPOINT = 'https://openrouter.ai/api/v1/chat/completions'
 
 export class ApiClient {
   private endpoint: string
@@ -19,14 +20,26 @@ export class ApiClient {
     }
 
     try {
-      const response = await fetch(this.endpoint)
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json'
+      }
+
+      const response = await fetch(this.endpoint, { headers })
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
 
       const data: OpenRouterResponse = await response.json()
-      const models = data.data.map(model => this.transformModel(model))
+      
+      // Log filtering stats
+      const totalModels = data.data.length
+      const filteredRawModels = this.filterAvailableModels(data.data)
+      const filteredCount = totalModels - filteredRawModels.length
+      
+      console.log(`📊 Model filtering stats: ${totalModels} total → ${filteredRawModels.length} available (${filteredCount} filtered out)`)
+      
+      const models = filteredRawModels.map(model => this.transformModel(model))
       
       // Cache the results
       this.cache = models
@@ -45,17 +58,203 @@ export class ApiClient {
     }
   }
 
+  /**
+   * Test a model with an actual API call
+   */
+  async testModel(modelId: string, apiKey: string, testMessage: string = "Hello! Please respond with a brief greeting."): Promise<{
+    success: boolean
+    response?: string
+    error?: string
+    usage?: {
+      prompt_tokens: number
+      completion_tokens: number
+      total_tokens: number
+    }
+  }> {
+    if (!apiKey) {
+      return {
+        success: false,
+        error: 'API key is required for testing models'
+      }
+    }
+
+    try {
+      const response = await fetch(CHAT_COMPLETION_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: modelId,
+          messages: [
+            { role: 'user', content: testMessage }
+          ],
+          max_tokens: 100, // Keep it short for testing
+          temperature: 0.7
+        })
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        return {
+          success: false,
+          error: `HTTP ${response.status}: ${errorData.error?.message || response.statusText}`
+        }
+      }
+
+      const data = await response.json()
+      
+      return {
+        success: true,
+        response: data.choices?.[0]?.message?.content || 'No response content',
+        usage: data.usage
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error occurred'
+      }
+    }
+  }
+
+  /**
+   * Filter out models with known availability issues
+   */
+  private filterAvailableModels(models: OpenRouterModel[]): OpenRouterModel[] {
+    return models.filter(model => {
+      // Filter out models with zero or invalid context length
+      if (!model.context_length || model.context_length <= 0) {
+        console.debug(`Filtered out model ${model.id}: invalid context length (${model.context_length})`)
+        return false
+      }
+      
+      // Enhanced deprecated model detection
+      const isDeprecated = this.isModelDeprecated(model)
+      if (isDeprecated) {
+        console.debug(`Filtered out model ${model.id}: deprecated`)
+        return false
+      }
+      
+      // Filter out models with no capacity limits (often indicates unavailability)
+      if (model.per_request_limits) {
+        const promptTokens = parseInt(model.per_request_limits.prompt_tokens || '0')
+        const completionTokens = parseInt(model.per_request_limits.completion_tokens || '0')
+        
+        if (promptTokens <= 0 && completionTokens <= 0) {
+          console.debug(`Filtered out model ${model.id}: zero capacity limits`)
+          return false
+        }
+      }
+      
+      // Filter out models with invalid pricing (both prompt and completion are undefined/null)
+      if (!model.pricing || (!model.pricing.prompt && !model.pricing.completion)) {
+        console.debug(`Filtered out model ${model.id}: invalid pricing`)
+        return false
+      }
+      
+      // Filter out models with malformed IDs
+      if (!model.id || model.id.trim() === '') {
+        console.debug(`Filtered out model: empty or invalid ID`)
+        return false
+      }
+      
+      // Filter out known problematic model patterns
+      if (this.isKnownProblematicModel(model.id)) {
+        console.debug(`Filtered out model ${model.id}: known problematic model`)
+        return false
+      }
+      
+      return true
+    })
+  }
+
+  /**
+   * Check if a model is deprecated using multiple detection strategies
+   */
+  private isModelDeprecated(model: OpenRouterModel): boolean {
+    // Check instruct_type for deprecated keyword
+    if (model.architecture?.instruct_type?.toLowerCase().includes('deprecated')) {
+      return true
+    }
+    
+    // Check description for deprecation keywords
+    if (model.description) {
+      const description = model.description.toLowerCase()
+      const deprecationKeywords = [
+        'deprecated',
+        'has been deprecated',
+        'please switch to',
+        'no longer supported',
+        'discontinued',
+        'replaced by'
+      ]
+      
+      if (deprecationKeywords.some(keyword => description.includes(keyword))) {
+        return true
+      }
+    }
+    
+    // Check for specific known deprecated model patterns
+    const deprecatedPatterns = [
+      /.*-exp-\d{2}-\d{2}$/, // Experimental models with date endings like "exp-03-25"
+      /.*experimental.*$/i,  // Models with "experimental" in the name
+    ]
+    
+    if (deprecatedPatterns.some(pattern => pattern.test(model.id))) {
+      // Additional check: if it's an experimental model AND has $0 pricing, it might be deprecated
+      const inputCost = parseFloat(model.pricing?.prompt || '0')
+      const outputCost = parseFloat(model.pricing?.completion || '0')
+      
+      if (inputCost === 0 && outputCost === 0) {
+        return true
+      }
+    }
+    
+    return false
+  }
+
+  /**
+   * Check for known problematic model IDs that consistently cause issues
+   */
+  private isKnownProblematicModel(modelId: string): boolean {
+    const problematicModels = [
+      'google/gemini-2.5-pro-exp-03-25', // Known deprecated model causing 404s
+      // Add other known problematic models here as they're discovered
+    ]
+    
+    return problematicModels.includes(modelId)
+  }
+
+  /**
+   * Categorize models into free and paid
+   */
+  categorizeModels(models: ModelInfo[]): { freeModels: ModelInfo[], paidModels: ModelInfo[] } {
+    const freeModels: ModelInfo[] = []
+    const paidModels: ModelInfo[] = []
+    
+    models.forEach(model => {
+      if (model.costTier === 'free') {
+        freeModels.push(model)
+      } else {
+        paidModels.push(model)
+      }
+    })
+    
+    return { freeModels, paidModels }
+  }
+
   private transformModel(model: OpenRouterModel): ModelInfo {
     const provider = this.extractProvider(model.id)
     const costTier = this.calculateCostTier(model.pricing)
     const features = this.extractFeatures(model)
 
     return {
-      id: model.id,
+      id: model.id, // CRITICAL: Use exact model ID without modification
       name: model.name,
       provider,
       costTier,
-      description: model.description,
+      description: model.description || 'No description available',
       features,
       pricing: {
         input: parseFloat(model.pricing.prompt) || 0,
@@ -80,9 +279,12 @@ export class ApiClient {
   private calculateCostTier(pricing: { prompt: string; completion: string }): 'free' | 'low' | 'medium' | 'high' {
     const inputCost = parseFloat(pricing.prompt) || 0
     const outputCost = parseFloat(pricing.completion) || 0
+    
+    // Both input and output must be 0 for free tier
+    if (inputCost === 0 && outputCost === 0) return 'free'
+    
     const avgCost = (inputCost + outputCost) / 2
 
-    if (avgCost === 0) return 'free'
     if (avgCost < 0.000001) return 'low'     // < $0.001 per 1K tokens
     if (avgCost < 0.00001) return 'medium'   // < $0.01 per 1K tokens
     return 'high'
@@ -108,6 +310,13 @@ export class ApiClient {
       features.push('Instruct')
     }
 
+    // Add free indicator for free models
+    const inputCost = parseFloat(model.pricing.prompt) || 0
+    const outputCost = parseFloat(model.pricing.completion) || 0
+    if (inputCost === 0 && outputCost === 0) {
+      features.push('Free')
+    }
+
     return features
   }
 
@@ -121,7 +330,7 @@ export class ApiClient {
       {
         id: 'openai/gpt-4o-mini',
         name: 'GPT-4o Mini',
-        provider: 'OpenAI',
+        provider: 'OpenAI', 
         costTier: 'low',
         description: 'Fast and affordable multimodal model',
         features: ['Vision', 'Fast'],
@@ -149,6 +358,18 @@ export class ApiClient {
         features: ['Long Context'],
         pricing: { input: 0.003, output: 0.015, currency: 'USD' },
         context: 200000,
+        multimodal: false
+      },
+      // Add some free models to fallback
+      {
+        id: 'meta-llama/llama-3.2-3b-instruct:free',
+        name: 'Llama 3.2 3B Instruct (Free)',
+        provider: 'Meta',
+        costTier: 'free',
+        description: 'Free tier access to Llama 3.2 3B',
+        features: ['Free', 'Instruct'],
+        pricing: { input: 0, output: 0, currency: 'USD' },
+        context: 131072,
         multimodal: false
       }
     ]

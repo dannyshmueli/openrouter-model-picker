@@ -17,9 +17,18 @@ export function ModelChooserModal({
   theme = 'light',
   maxHeight = '80vh',
   maxWidth,
-  className
+  className,
+  categorizeByType = false
 }: ModelChooserModalProps) {
-  const { models, loading, error, refresh } = useModelData(apiEndpoint, fallbackModels)
+  const { 
+    models, 
+    freeModels, 
+    paidModels, 
+    loading, 
+    error, 
+    refresh 
+  } = useModelData(apiEndpoint, fallbackModels)
+  
   const {
     filteredModels,
     filterState,
@@ -52,6 +61,7 @@ export function ModelChooserModal({
   }, [isOpen, onClose])
 
   const handleModelSelect = useCallback((modelId: string) => {
+    // CRITICAL: Pass exact model ID without any modification
     onModelChange(modelId)
   }, [onModelChange])
 
@@ -62,6 +72,74 @@ export function ModelChooserModal({
   }, [selectedModel, onClose])
 
   if (!isOpen) return null
+
+  const renderCategorizedModels = () => {
+    if (!categorizeByType) {
+      return (
+        <ModelTable
+          models={filteredModels}
+          selectedModel={selectedModel}
+          onModelSelect={handleModelSelect}
+          sortConfig={sortConfig}
+          onSort={setSort}
+        />
+      )
+    }
+
+    // Categorize filtered models
+    const categorizedFree = filteredModels.filter(m => m.costTier === 'free')
+    const categorizedPaid = filteredModels.filter(m => m.costTier !== 'free')
+
+    return (
+      <div className="categorized-models">
+        {categorizedFree.length > 0 && (
+          <div className="model-category">
+            <h3 style={{ 
+              fontSize: '1rem', 
+              fontWeight: '600', 
+              margin: '0.75rem 0 0.5rem', 
+              color: '#10b981',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}>
+              Free Models ({categorizedFree.length})
+            </h3>
+            <ModelTable
+              models={categorizedFree}
+              selectedModel={selectedModel}
+              onModelSelect={handleModelSelect}
+              sortConfig={sortConfig}
+              onSort={setSort}
+            />
+          </div>
+        )}
+
+        {categorizedPaid.length > 0 && (
+          <div className="model-category">
+            <h3 style={{ 
+              fontSize: '1rem', 
+              fontWeight: '600', 
+              margin: '1rem 0 0.5rem', 
+              color: 'var(--or-text)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}>
+              Paid Models ({categorizedPaid.length})
+            </h3>
+            <ModelTable
+              models={categorizedPaid}
+              selectedModel={selectedModel}
+              onModelSelect={handleModelSelect}
+              sortConfig={sortConfig}
+              onSort={setSort}
+            />
+          </div>
+        )}
+      </div>
+    )
+  }
 
   return (
     <div className={`openrouter-modal ${theme === 'dark' ? 'dark' : ''} ${className || ''}`}>
@@ -83,6 +161,16 @@ export function ModelChooserModal({
           <div className="modal-header">
             <h2 className="modal-title">
               Choose OpenRouter LLM Model
+              {!loading && !error && models.length > 0 && (
+                <span style={{ 
+                  fontWeight: '400', 
+                  fontSize: '0.875rem', 
+                  color: 'var(--or-text-secondary)',
+                  marginLeft: '0.5rem'
+                }}>
+                  ({models.length} models{freeModels.length > 0 && `: ${freeModels.length} free, ${paidModels.length} paid`})
+                </span>
+              )}
             </h2>
             
             <button
@@ -109,20 +197,14 @@ export function ModelChooserModal({
                   filterStats={filterStats}
                 />
                 
-                <ModelTable
-                  models={filteredModels}
-                  selectedModel={selectedModel}
-                  onModelSelect={handleModelSelect}
-                  sortConfig={sortConfig}
-                  onSort={setSort}
-                />
+                {renderCategorizedModels()}
               </>
             )}
           </div>
 
           {/* Footer */}
           <div style={{
-            padding: '1.5rem',
+            padding: '1rem 1.5rem',
             borderTop: '1px solid var(--or-border)',
             backgroundColor: 'rgba(0, 0, 0, 0.02)',
             display: 'flex',
@@ -132,7 +214,12 @@ export function ModelChooserModal({
             <div>
               {selectedModel && (
                 <div style={{ fontSize: '0.875rem', color: 'var(--or-text-secondary)' }}>
-                  Selected: <span style={{ fontWeight: '500', color: 'var(--or-text)' }}>{selectedModel}</span>
+                  Selected: <span style={{ 
+                    fontWeight: '500', 
+                    color: 'var(--or-text)',
+                    fontFamily: 'monospace',
+                    fontSize: '0.8rem'
+                  }}>{selectedModel}</span>
                 </div>
               )}
             </div>

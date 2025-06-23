@@ -19,7 +19,8 @@ const DEFAULT_FILTER_STATE: FilterState = {
   searchTerm: '',
   selectedProviders: [],
   selectedCostTiers: [],
-  showMultimodal: false
+  showMultimodal: false,
+  hideExperimental: false
 }
 
 export function useFiltering(models: ModelInfo[]): UseFilteringReturn {
@@ -47,6 +48,23 @@ export function useFiltering(models: ModelInfo[]): UseFilteringReturn {
       }
       return { key, direction }
     })
+  }, [])
+
+  const isExperimentalModel = useCallback((model: ModelInfo) => {
+    const experimentalPatterns = [
+      /.*-exp-\d{2}-\d{2}$/i,      // Models ending with -exp-MM-DD
+      /.*experimental.*$/i,        // Models with "experimental" in the name
+      /.*-preview.*$/i,           // Preview models
+      /.*-beta.*$/i,              // Beta models
+      /.*-alpha.*$/i,             // Alpha models
+      /.*-test.*$/i,              // Test models
+    ]
+    
+    return experimentalPatterns.some(pattern => pattern.test(model.id)) ||
+           model.name.toLowerCase().includes('experimental') ||
+           model.name.toLowerCase().includes('preview') ||
+           model.name.toLowerCase().includes('beta') ||
+           model.description.toLowerCase().includes('experimental')
   }, [])
 
   const filteredModels = useMemo(() => {
@@ -83,6 +101,11 @@ export function useFiltering(models: ModelInfo[]): UseFilteringReturn {
       filtered = filtered.filter(model => model.multimodal)
     }
 
+    // Hide experimental models filter
+    if (filterState.hideExperimental) {
+      filtered = filtered.filter(model => !isExperimentalModel(model))
+    }
+
     // Sorting
     if (sortConfig.key) {
       filtered.sort((a, b) => {
@@ -108,7 +131,7 @@ export function useFiltering(models: ModelInfo[]): UseFilteringReturn {
     }
 
     return filtered
-  }, [models, filterState, sortConfig])
+  }, [models, filterState, sortConfig, isExperimentalModel])
 
   const filterStats = useMemo(() => ({
     total: models.length,

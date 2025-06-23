@@ -14,8 +14,6 @@ export interface ModelInfo {
   multimodal?: boolean         // Supports images/files
 }
 
-
-
 export interface ModelChooserModalProps {
   // Core functionality
   isOpen: boolean
@@ -30,6 +28,7 @@ export interface ModelChooserModalProps {
   maxHeight?: string           // Custom modal height
   maxWidth?: string            // Custom modal width
   className?: string           // Custom CSS class
+  categorizeByType?: boolean   // Show models categorized by free/paid
 }
 
 export interface OpenRouterModel {
@@ -67,6 +66,7 @@ export interface FilterState {
   selectedProviders: string[]
   selectedCostTiers: string[]
   showMultimodal: boolean
+  hideExperimental: boolean
 }
 
 export interface SortConfig {
