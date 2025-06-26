@@ -1,37 +1,43 @@
-# Development files
-src/main.tsx
+# Source files (already built)
 src/DemoApp.tsx
-.eslintrc.js
-.gitignore
+src/main.tsx
+src/App.css
+index.html
 
-# Build configs (keep for GitHub installs)
-# tsconfig.*.json
-# vite.config.ts
-
-# Git and GitHub
-.git/
-.github/
-
-# Dependencies
-node_modules/
-
-# IDE files
+# Development files
 .vscode/
 .idea/
-*.swp
-*.swo
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Logs
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+.DS_Store
+
+# Build artifacts not needed
+*.map
 
 # Development dependencies
-package-lock.json
-yarn.lock
-pnpm-lock.yaml 
+node_modules/
+.git/
+.gitignore
+
+# Documentation source
+*.md
+!README.md
+
+# Test files
+__tests__/
+*.test.*
+*.spec.*
+
+# Config files not needed by users
+.eslintrc*
+.prettierrc*
+tsconfig.json
+!tsconfig.build.json
+
+# CI/CD
+.github/
+.circleci/
+.travis.yml
+
+# Examples and demos  
+examples/
+demo/

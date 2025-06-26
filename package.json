@@ -1,6 +1,6 @@
 {
   "name": "openrouter-model-picker",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Third-party React component for OpenRouter model selection",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -8,6 +8,7 @@
   "files": [
     "dist/",
     "src/",
+    "scripts/",
     "README.md",
     "tsconfig.build.json",
     "vite.config.ts"
@@ -27,12 +28,11 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build && tsc -p tsconfig.build.json --skipLibCheck && cp src/styles.d.ts dist/styles.d.ts",
+    "build": "vite build && tsc -p tsconfig.build.json --skipLibCheck && node scripts/copy-styles.js",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "prepublishOnly": "npm run build",
-    "postinstall": "npm run build"
+    "prepublishOnly": "npm run build"
   },
   "peerDependencies": {
     "react": "^18.0.0",
@@ -43,15 +43,15 @@
     "@typescript-eslint/parser": "^7.2.0",
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.6"
-  },
-  "dependencies": {
-    "lucide-react": "^0.263.1",
+    "eslint-plugin-react-refresh": "^0.4.6",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@vitejs/plugin-react": "^4.2.1",
     "typescript": "^5.2.2",
     "vite": "^5.2.0"
+  },
+  "dependencies": {
+    "lucide-react": "^0.263.1"
   },
   "keywords": [
     "react",
