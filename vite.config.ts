@@ -6,15 +6,16 @@ import { fileURLToPath } from 'url'
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const isDemo = mode === 'demo'
+  const isDemoLocal = mode === 'demo-local'
   const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
-  if (isDemo) {
-    // Demo build configuration for GitHub Pages
+  if (isDemo || isDemoLocal) {
+    // Demo build configuration
     return {
       plugins: [react()],
-      base: '/openrouter-model-picker/',  // GitHub Pages repo path
+      base: isDemo ? '/openrouter-model-picker/' : '/',  // GitHub Pages path vs local root
       build: {
-        outDir: 'demo-dist',
+        outDir: isDemo ? 'demo-dist' : 'demo-dist-local',
         emptyOutDir: true,
         // Regular app build, not library
         rollupOptions: {
