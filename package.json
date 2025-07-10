@@ -9,6 +9,7 @@
     "dist/",
     "src/",
     "scripts/",
+    "index.html",
     "README.md",
     "tsconfig.build.json",
     "vite.config.ts"
@@ -29,7 +30,10 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build && tsc -p tsconfig.build.json --skipLibCheck && node scripts/copy-styles.js",
+    "build-demo": "vite build --mode demo --outDir demo-dist",
     "preview": "vite preview",
+    "preview-demo": "npx serve demo-dist",
+    "demo": "echo '🎮 Demo Options:' && echo '' && echo '🌐 Live Demo: https://dannyshmueli.github.io/openrouter-model-picker/' && echo '' && echo '🚀 Run Locally:' && echo '1. Clone: git clone https://github.com/dannyshmueli/openrouter-model-picker' && echo '2. Install: npm install' && echo '3. Run: npm run dev'",
     "type-check": "tsc --noEmit",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "prepublishOnly": "npm run build"
@@ -39,14 +43,15 @@
     "react-dom": "^18.0.0"
   },
   "devDependencies": {
+    "@types/node": "^24.0.12",
+    "@types/react": "^18.2.66",
+    "@types/react-dom": "^18.2.22",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",
+    "@vitejs/plugin-react": "^4.2.1",
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
-    "@types/react": "^18.2.66",
-    "@types/react-dom": "^18.2.22",
-    "@vitejs/plugin-react": "^4.2.1",
     "typescript": "^5.2.2",
     "vite": "^5.2.0"
   },

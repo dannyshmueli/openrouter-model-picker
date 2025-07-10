@@ -262,7 +262,9 @@ export class ApiClient {
         currency: 'USD'
       },
       context: model.context_length,
-      multimodal: this.isMultimodal(model)
+      multimodal: this.isMultimodal(model),
+      reasoning: this.isReasoningModel(model),
+      streamCancel: this.supportsStreamCancellation(model)
     }
   }
 
@@ -298,6 +300,14 @@ export class ApiClient {
       features.push('Vision')
     }
     
+    if (this.isReasoningModel(model)) {
+      features.push('Reasoning')
+    }
+    
+    if (this.supportsStreamCancellation(model)) {
+      features.push('Stream Cancel')
+    }
+    
     if (model.top_provider.is_moderated) {
       features.push('Moderated')
     }
@@ -325,6 +335,67 @@ export class ApiClient {
            model.architecture.modality === 'multimodal' || false
   }
 
+  private isReasoningModel(model: OpenRouterModel): boolean {
+    const modelId = model.id?.toLowerCase() || '';
+    
+    // ⚠️ WARNING: This is pattern-based detection, not an official API field!
+    // 
+    // The `internal_reasoning` field in the pricing object indicates the COST PER REASONING TOKEN,
+    // not whether the model supports reasoning. A value of "0" means reasoning tokens are free,
+    // while a non-zero value indicates a cost per token. Many non-reasoning models have this field
+    // present with a value of 0 or null.
+    //
+    // This pattern matching approach:
+    // - May miss new reasoning models with different naming patterns
+    // - Requires manual updates when new reasoning models are released
+    // - Is based on OpenRouter's official documentation as of January 2025
+    // 
+    // TODO: Replace with official API field when OpenRouter provides one
+    
+    // Use conservative pattern matching for known reasoning models based on OpenRouter's official docs:
+    // - DeepSeek R1 models (and derived models)
+    // - Gemini Thinking models  
+    // - Anthropic reasoning models
+    // - OpenAI o-series (though they don't return reasoning tokens)
+    // - Grok reasoning models
+    // - Other known reasoning patterns
+    
+    const reasoningPatterns = [
+      /\bo1(-preview|-mini)?\b/i,           // OpenAI o1, o1-preview, o1-mini
+      /\bdeepseek.*r1\b/i,                  // DeepSeek R1 variants
+      /\bgemini.*thinking\b/i,              // Gemini Thinking models
+      /\bclaude.*thinking/i,                // Claude thinking variants (e.g., claude-3.7-sonnet:thinking)
+      /anthropic.*thinking/i,               // Anthropic thinking models (covers anthropic/claude-3.7-sonnet:thinking)
+      /\bgrok.*reasoning\b/i,               // Grok reasoning models
+      /\bminimax.*m1\b/i,                   // MiniMax M1 reasoning models
+      /\bqwen.*r1\b/i,                      // Qwen R1 reasoning models
+      /reasoning.*model/i,                  // Generic reasoning model names
+      /thinking.*model/i                    // Generic thinking model names
+    ];
+    
+    return reasoningPatterns.some(pattern => pattern.test(modelId));
+  }
+
+  private supportsStreamCancellation(model: OpenRouterModel): boolean {
+    const provider = this.extractProvider(model.id).toLowerCase();
+    
+    // Based on OpenRouter's official documentation for stream cancellation support
+    // https://openrouter.ai/docs/api-reference/streaming#stream-cancellation
+    
+    const supportedProviders = new Set([
+      'openai', 'azure', 'anthropic',
+      'fireworks', 'mancer', 'recursal',
+      'anyscale', 'lepton', 'octoai',
+      'novita', 'deepinfra', 'together',
+      'cohere', 'hyperbolic', 'infermatic',
+      'avian', 'xai', 'cloudflare',
+      'sfcompute', 'nineteen', 'liquid',
+      'friendli', 'chutes', 'deepseek'
+    ]);
+    
+    return supportedProviders.has(provider);
+  }
+
   private getFallbackModels(): ModelInfo[] {
     return [
       {
@@ -336,7 +407,22 @@ export class ApiClient {
         features: ['Vision', 'Fast'],
         pricing: { input: 0.00015, output: 0.0006, currency: 'USD' },
         context: 128000,
-        multimodal: true
+        multimodal: true,
+        reasoning: false,
+        streamCancel: true  // OpenAI supports stream cancellation
+      },
+      {
+        id: 'openai/o1-preview',
+        name: 'o1-preview',
+        provider: 'OpenAI',
+        costTier: 'high',
+        description: 'Advanced reasoning model with enhanced thinking capabilities',
+        features: ['Reasoning', 'Advanced'],
+        pricing: { input: 0.015, output: 0.06, currency: 'USD' },
+        context: 128000,
+        multimodal: false,
+        reasoning: true,
+        streamCancel: true  // OpenAI supports stream cancellation
       },
       {
         id: 'openai/gpt-4o',
@@ -347,7 +433,22 @@ export class ApiClient {
         features: ['Vision', 'Advanced'],
         pricing: { input: 0.005, output: 0.015, currency: 'USD' },
         context: 128000,
-        multimodal: true
+        multimodal: true,
+        reasoning: false,
+        streamCancel: true  // OpenAI supports stream cancellation
+      },
+      {
+        id: 'deepseek/deepseek-r1',
+        name: 'DeepSeek R1',
+        provider: 'DeepSeek',
+        costTier: 'medium',
+        description: 'Advanced reasoning model with step-by-step thinking',
+        features: ['Reasoning', 'Long Context'],
+        pricing: { input: 0.002, output: 0.008, currency: 'USD' },
+        context: 200000,
+        multimodal: false,
+        reasoning: true,
+        streamCancel: true  // DeepSeek supports stream cancellation
       },
       {
         id: 'anthropic/claude-3-sonnet',
@@ -358,7 +459,9 @@ export class ApiClient {
         features: ['Long Context'],
         pricing: { input: 0.003, output: 0.015, currency: 'USD' },
         context: 200000,
-        multimodal: false
+        multimodal: false,
+        reasoning: false,
+        streamCancel: true  // Anthropic supports stream cancellation
       },
       // Add some free models to fallback
       {
@@ -370,7 +473,9 @@ export class ApiClient {
         features: ['Free', 'Instruct'],
         pricing: { input: 0, output: 0, currency: 'USD' },
         context: 131072,
-        multimodal: false
+        multimodal: false,
+        reasoning: false,
+        streamCancel: false  // Meta/HuggingFace does not support stream cancellation
       }
     ]
   }

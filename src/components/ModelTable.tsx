@@ -1,5 +1,5 @@
 
-import { ChevronUp, ChevronDown, Eye, Zap, Shield, FileText } from 'lucide-react'
+import { ChevronUp, ChevronDown, Eye, Zap, Shield, FileText, Brain, StopCircle } from 'lucide-react'
 import { ModelInfo, SortConfig } from '../types'
 import { formatPrice, formatContextLength, truncateText } from '../utils/formatters'
 
@@ -32,6 +32,10 @@ export function ModelTable({
     switch (feature.toLowerCase()) {
       case 'vision':
         return <Eye style={iconStyle} />
+      case 'reasoning':
+        return <Brain style={iconStyle} />
+      case 'stream cancel':
+        return <StopCircle style={iconStyle} />
       case 'fast':
         return <Zap style={iconStyle} />
       case 'moderated':

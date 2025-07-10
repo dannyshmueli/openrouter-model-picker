@@ -1,5 +1,5 @@
 import React, { useCallback, useRef } from 'react'
-import { Search, Filter, RotateCcw } from 'lucide-react'
+import { Search, Filter, RotateCcw, Info } from 'lucide-react'
 import { FilterState } from '../types'
 import { getCostTierLabel } from '../utils/formatters'
 
@@ -54,6 +54,8 @@ export function FilterBar({
     filterState.selectedProviders.length > 0 || 
     filterState.selectedCostTiers.length > 0 || 
     filterState.showMultimodal ||
+    filterState.showReasoning ||
+    filterState.showStreamCancel ||
     filterState.hideExperimental
 
   return (
@@ -156,6 +158,64 @@ export function FilterBar({
             />
             <span style={{ fontSize: '0.8rem', color: 'var(--or-text)' }}>Multimodal only</span>
           </label>
+
+          {/* Reasoning Filter with Warning */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={filterState.showReasoning}
+                onChange={(e) => onFilterChange('showReasoning', e.target.checked)}
+                style={{ width: '0.875rem', height: '0.875rem' }}
+              />
+              <span style={{ fontSize: '0.8rem', color: 'var(--or-text)' }}>Reasoning only</span>
+            </label>
+            <div 
+              style={{ 
+                position: 'relative',
+                display: 'flex',
+                alignItems: 'center',
+                cursor: 'help'
+              }}
+              title="⚠️ Reasoning detection uses pattern matching for known models (o1, DeepSeek R1, Gemini Thinking, etc.). New reasoning models may not be detected. OpenRouter doesn't provide an official reasoning capability field."
+            >
+              <Info style={{ 
+                width: '0.75rem', 
+                height: '0.75rem', 
+                color: 'var(--or-text-secondary)',
+                opacity: 0.7
+              }} />
+            </div>
+          </div>
+
+          {/* Stream Cancel Filter with Warning */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={filterState.showStreamCancel}
+                onChange={(e) => onFilterChange('showStreamCancel', e.target.checked)}
+                style={{ width: '0.875rem', height: '0.875rem' }}
+              />
+              <span style={{ fontSize: '0.8rem', color: 'var(--or-text)' }}>Stream cancel only</span>
+            </label>
+            <div 
+              style={{ 
+                position: 'relative',
+                display: 'flex',
+                alignItems: 'center',
+                cursor: 'help'
+              }}
+              title="⚠️ Stream cancellation stops model processing and billing immediately when you abort a request. Provider-dependent: OpenAI, Anthropic, DeepSeek support it; Google, Groq, HuggingFace don't. Critical for cost control in streaming scenarios."
+            >
+              <Info style={{ 
+                width: '0.75rem', 
+                height: '0.75rem', 
+                color: 'var(--or-text-secondary)',
+                opacity: 0.7
+              }} />
+            </div>
+          </div>
 
           {/* Hide Experimental Filter */}
           <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', cursor: 'pointer' }}>

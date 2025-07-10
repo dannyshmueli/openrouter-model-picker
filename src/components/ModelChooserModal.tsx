@@ -12,6 +12,7 @@ export function ModelChooserModal({
   onClose,
   selectedModel,
   onModelChange,
+  onModelSelect,
   apiEndpoint,
   fallbackModels,
   theme = 'light',
@@ -63,7 +64,15 @@ export function ModelChooserModal({
   const handleModelSelect = useCallback((modelId: string) => {
     // CRITICAL: Pass exact model ID without any modification
     onModelChange(modelId)
-  }, [onModelChange])
+    
+    // Also call the enhanced callback with full model info if provided
+    if (onModelSelect) {
+      const model = models.find(m => m.id === modelId)
+      if (model) {
+        onModelSelect(model)
+      }
+    }
+  }, [onModelChange, onModelSelect, models])
 
   const handleSelectAndClose = useCallback(() => {
     if (selectedModel) {
@@ -202,26 +211,95 @@ export function ModelChooserModal({
             )}
           </div>
 
+          {/* Reasoning Detection Warning */}
+          {filteredModels.some(model => model.reasoning) && (
+            <div style={{
+              padding: '0.75rem 1.5rem',
+              borderTop: '1px solid var(--or-border)',
+              backgroundColor: '#fef3c7',
+              borderLeft: '4px solid #f59e0b',
+              fontSize: '0.75rem',
+              color: '#92400e',
+              lineHeight: '1.4'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+                <span style={{ fontSize: '0.875rem' }}>⚠️</span>
+                <div>
+                  <strong>Reasoning Detection Notice:</strong> Reasoning capabilities are detected using pattern matching for known models (o1, DeepSeek R1, Gemini Thinking, etc.). 
+                  This may not detect all reasoning models or may change as new models are released. OpenRouter doesn't provide an official reasoning capability field.
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Footer */}
           <div style={{
             padding: '1rem 1.5rem',
-            borderTop: '1px solid var(--or-border)',
+            borderTop: filteredModels.some(model => model.reasoning) ? 'none' : '1px solid var(--or-border)',
             backgroundColor: 'rgba(0, 0, 0, 0.02)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between'
           }}>
             <div>
-              {selectedModel && (
-                <div style={{ fontSize: '0.875rem', color: 'var(--or-text-secondary)' }}>
-                  Selected: <span style={{ 
-                    fontWeight: '500', 
-                    color: 'var(--or-text)',
-                    fontFamily: 'monospace',
-                    fontSize: '0.8rem'
-                  }}>{selectedModel}</span>
-                </div>
-              )}
+              {selectedModel && (() => {
+                const model = models.find(m => m.id === selectedModel)
+                return (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                    <div style={{ fontSize: '0.875rem', color: 'var(--or-text-secondary)' }}>
+                      Selected: <span style={{ 
+                        fontWeight: '500', 
+                        color: 'var(--or-text)',
+                        fontFamily: 'monospace',
+                        fontSize: '0.8rem'
+                      }}>{selectedModel}</span>
+                    </div>
+                    {model && (
+                      <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--or-text-secondary)' }}>
+                          {model.name} • {model.provider}
+                        </span>
+                        {model.reasoning && (
+                          <span style={{
+                            padding: '0.125rem 0.375rem',
+                            fontSize: '0.7rem',
+                            backgroundColor: '#8b5cf6',
+                            color: 'white',
+                            borderRadius: '0.25rem',
+                            fontWeight: '500'
+                          }}>
+                            🧠 Reasoning
+                          </span>
+                        )}
+                        {model.multimodal && (
+                          <span style={{
+                            padding: '0.125rem 0.375rem',
+                            fontSize: '0.7rem',
+                            backgroundColor: '#10b981',
+                            color: 'white',
+                            borderRadius: '0.25rem',
+                            fontWeight: '500'
+                          }}>
+                            👁 Vision
+                          </span>
+                        )}
+                        {model.streamCancel && (
+                          <span style={{
+                            padding: '0.125rem 0.375rem',
+                            fontSize: '0.7rem',
+                            backgroundColor: '#f59e0b',
+                            color: 'white',
+                            borderRadius: '0.25rem',
+                            fontWeight: '500'
+                          }}>
+                            ⏹️ Stream Cancel
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )
+              })()}
             </div>
             
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>

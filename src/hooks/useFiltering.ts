@@ -20,7 +20,9 @@ const DEFAULT_FILTER_STATE: FilterState = {
   selectedProviders: [],
   selectedCostTiers: [],
   showMultimodal: false,
-  hideExperimental: false
+  hideExperimental: false,
+  showReasoning: false,
+  showStreamCancel: false
 }
 
 export function useFiltering(models: ModelInfo[]): UseFilteringReturn {
@@ -99,6 +101,16 @@ export function useFiltering(models: ModelInfo[]): UseFilteringReturn {
     // Multimodal filter
     if (filterState.showMultimodal) {
       filtered = filtered.filter(model => model.multimodal)
+    }
+
+    // Reasoning filter
+    if (filterState.showReasoning) {
+      filtered = filtered.filter(model => model.reasoning)
+    }
+
+    // Stream cancellation filter
+    if (filterState.showStreamCancel) {
+      filtered = filtered.filter(model => model.streamCancel)
     }
 
     // Hide experimental models filter

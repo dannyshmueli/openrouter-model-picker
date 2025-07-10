@@ -12,6 +12,8 @@ export interface ModelInfo {
   }
   context?: number             // Context window size
   multimodal?: boolean         // Supports images/files
+  reasoning?: boolean          // Supports reasoning/thinking tokens
+  streamCancel?: boolean
 }
 
 export interface ModelChooserModalProps {
@@ -20,6 +22,7 @@ export interface ModelChooserModalProps {
   onClose: () => void
   selectedModel?: string
   onModelChange: (modelId: string) => void
+  onModelSelect?: (model: ModelInfo) => void  // Enhanced callback with full model info
   
   // Customization
   apiEndpoint?: string         // Custom API endpoint
@@ -38,6 +41,7 @@ export interface OpenRouterModel {
   pricing: {
     prompt: string    // Price per input token
     completion: string // Price per output token
+    internal_reasoning?: string // Price per reasoning token (indicates reasoning support)
   }
   context_length: number
   architecture: {
@@ -67,6 +71,8 @@ export interface FilterState {
   selectedCostTiers: string[]
   showMultimodal: boolean
   hideExperimental: boolean
+  showReasoning: boolean
+  showStreamCancel: boolean
 }
 
 export interface SortConfig {
