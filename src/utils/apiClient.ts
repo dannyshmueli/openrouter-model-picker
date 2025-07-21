@@ -32,14 +32,7 @@ export class ApiClient {
 
       const data: OpenRouterResponse = await response.json()
       
-      // Log filtering stats
-      const totalModels = data.data.length
-      const filteredRawModels = this.filterAvailableModels(data.data)
-      const filteredCount = totalModels - filteredRawModels.length
-      
-      console.log(`📊 Model filtering stats: ${totalModels} total → ${filteredRawModels.length} available (${filteredCount} filtered out)`)
-      
-      const models = filteredRawModels.map(model => this.transformModel(model))
+      const models = this.filterAvailableModels(data.data).map(model => this.transformModel(model))
       
       // Cache the results
       this.cache = models
