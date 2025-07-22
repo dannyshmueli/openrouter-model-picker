@@ -57,7 +57,7 @@
     "vite": "^5.2.0"
   },
   "dependencies": {
-    "lucide-react": "^0.263.1"
+    "lucide-react": "^0.514.0"
   },
   "keywords": [
     "react",
